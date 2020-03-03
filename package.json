@@ -8,6 +8,7 @@
   "license": "MIT",
   "private": false,
   "dependencies": {
+    "amqplib": "^0.5.5",
     "smpp": "^0.4.0"
   }
 }
