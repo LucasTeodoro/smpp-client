@@ -1,0 +1,13 @@
+{
+  "name": "smpp-client",
+  "version": "1.0.0",
+  "description": "Smpp Client ",
+  "main": "app.js",
+  "repository": "https://github.com/LucasTeodoro/smpp-client",
+  "author": "Lucas Otávio Teodoro Silva",
+  "license": "MIT",
+  "private": false,
+  "dependencies": {
+    "smpp": "^0.4.0"
+  }
+}
