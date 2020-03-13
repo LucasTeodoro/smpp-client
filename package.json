@@ -9,6 +9,8 @@
   "private": false,
   "dependencies": {
     "amqplib": "^0.5.5",
+    "iconv-lite": "^0.5.1",
+    "lodash": "^4.17.15",
     "smpp": "^0.4.0"
   }
 }
