@@ -12,8 +12,8 @@ class Smpp {
 
     connect() {
         this._session = smpp.connect({
-            url: ``,
-            auto_enquire_link_period: 10000
+            url: `smpp://${process.argv.SMPP_HOST}:${process.argv.SMPP_PORT}`,
+            auto_enquire_link_period: 1000 * (process.argv.SMPP_ENQUIRELINK || 10)
         });
 
         this._session.on("connect", () => {
@@ -32,7 +32,7 @@ class Smpp {
                 let responseStatus = pdu.short_message.message.replace(/ date/g,"_date").split(" ");
                 let responseStatusObj = {};
                 _.each(responseStatus, (elements) => {
-                    element = elements.split(":");
+                    const element = elements.split(":");
                     responseStatusObj[element[0]] = element[1];
                 });
                 responseStatusObj["destination_addr"] = pdu.destination_addr;
