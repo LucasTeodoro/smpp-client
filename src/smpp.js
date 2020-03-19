@@ -1,5 +1,5 @@
 const smpp = require("smpp"),
-      iconv = require("iconv-lite")
+      iconv = require("iconv-lite"),
       _ = require("lodash");
 
 delete smpp.encodings.UCS2;
@@ -37,16 +37,8 @@ class Smpp {
                 });
                 responseStatusObj["destination_addr"] = pdu.destination_addr;
                 responseStatusObj["source_addr"] = pdu.source_addr;
-                rabbit.publish("dlr", responseStatusObj);
+                channel.publish(`dlr_${process.argv.AMQP_QUEUE || "default_queue"}`, responseStatusObj);
                 this._session.send(pdu.response());
-            } else {
-                if (pdu.data_coding === 8) {
-                    pdu.short_message.message = iconv.decode(pdu.short_message.message, 'latin1');
-                }
-                if (pdu.short_message.message.indexOf('dlvrd:') === -1) {
-                    rabbit.publish("mo", pdu);
-                    session.send(pdu.response());
-                }
             }
         });
 
@@ -69,6 +61,41 @@ class Smpp {
 
     isConnected() {
         return this._isConnected;
+    }
+
+    async send(message, destine) {
+        let pdu;
+        if(message.length > 160) {
+            pdu = new smpp.PDU("submit_sm", {
+                destination_addr: destine,
+                message_payload: message,
+                registered_delivery: 1,
+                data_coding: 0x01
+            });
+        } else {
+            pdu = new smpp.PDU("submit_sm", {
+                destination_addr: destine,
+                short_message: message,
+                registered_delivery: 1,
+                data_coding: 0x01
+            });
+        }
+
+        this._session.send(pdu, (responsePdu) => {
+            if(responsePdu.command_status === 0) {
+                return responsePdu.message_id;
+            }
+
+            throw new Error(`Não foi possivel enviar o sms erro: ${this.lookupPDUStatusKey(responsePdu.command_status)}`);
+        });
+    }
+
+    lookupPDUStatusKey(pduCommandStatus) {
+        for (var k in smpp.errors) {
+            if (smpp.errors[k] === pduCommandStatus) {
+                return k
+            }
+        }
     }
 }
 

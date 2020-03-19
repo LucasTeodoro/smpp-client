@@ -1,5 +1,5 @@
 const {connect} = require("amqplib");
-const {Smpp} = require("./src/smpp");
+const Smpp = require("./src/smpp");
 
 async function main() {
     try {
@@ -17,13 +17,18 @@ async function main() {
             heartbeat: process.argv.AMQP_HEARTBEAT || 0,
             vhost: process.argv.AMQP_VHOST || '/',
         });
-        const channel = await amqp_connection.createChannel();
+        window.channel = await amqp_connection.createChannel();
         if(typeof process.argv.AMQP_PREFETCH != "undefined") {
             channel.prefetch(process.argv.AMQP_PREFETCH);
         }
         channel.assertQueue(queue, {durable: true});
-        channel.consume(queue, (msg) => {
+        channel.consume(queue, async (msg) => {
             const data = JSON.parse(msg.content);
+            if(smpp.isConnected()) {
+              const message_id = await smpp.send(data.message, data.number);
+            }
+
+            channel.nack(msg);
         });
     } catch (e) {
         throw `Something was wrong if connection: ${e.message}`;
