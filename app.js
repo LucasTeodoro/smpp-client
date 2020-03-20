@@ -25,7 +25,15 @@ async function main() {
         channel.consume(queue, async (msg) => {
             const data = JSON.parse(msg.content);
             if(smpp.isConnected()) {
-              const message_id = await smpp.send(data.message, data.number);
+                try {
+                    const message_id = await smpp.send(data.message, data.number);
+                    channel.ack(msg);
+                } catch (e) {
+                    console.log(e.message);
+                    setTimeout(() => {
+                        channel.nack(msg);
+                    }, 1000 * (process.argv.SMPP_RETENT_DELAY || 30));
+                }
             }
 
             channel.nack(msg);
