@@ -45,7 +45,7 @@ class Smpp {
                 }
                 if (pdu.short_message.message.indexOf('dlvrd:') === -1) {
                     channel.publish(receiveQueue, buffer(pdu));
-                    session.send(pdu.response());
+                    this._session.send(pdu.response());
                 }
             }
         });
