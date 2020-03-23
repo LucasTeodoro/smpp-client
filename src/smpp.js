@@ -37,8 +37,16 @@ class Smpp {
                 });
                 responseStatusObj["destination_addr"] = pdu.destination_addr;
                 responseStatusObj["source_addr"] = pdu.source_addr;
-                channel.publish(`dlr_${process.argv.AMQP_QUEUE || "default_queue"}`, responseStatusObj);
+                channel.publish(confirmQueue, buffer(responseStatusObj));
                 this._session.send(pdu.response());
+            } else {
+                if (pdu.data_coding === 8) {
+                    pdu.short_message.message = iconv.decode(pdu.short_message.message, 'latin1');
+                }
+                if (pdu.short_message.message.indexOf('dlvrd:') === -1) {
+                    channel.publish(receiveQueue, buffer(pdu));
+                    this._session.send(pdu.response());
+                }
             }
         });
 
@@ -82,11 +90,14 @@ class Smpp {
         }
 
         this._session.send(pdu, (responsePdu) => {
+            const command_status = this.lookupPDUStatusKey(responsePdu.command_status);
             if(responsePdu.command_status === 0) {
-                return responsePdu.message_id;
+                return {message_id: responsePdu.message_id, command_status: command_status};
+            } else {
+                return {message_id: undefined, command_status: command_status};
             }
 
-            throw new Error(`Não foi possivel enviar o sms erro: ${this.lookupPDUStatusKey(responsePdu.command_status)}`);
+            throw new Error(`Não foi possivel enviar o sms erro: ${command_status}`);
         });
     }
 

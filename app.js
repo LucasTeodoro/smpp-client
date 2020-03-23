@@ -1,6 +1,10 @@
 const {connect} = require("amqplib");
 const Smpp = require("./src/smpp");
 
+window.buffer = (msg) => {
+    return Buffer.from(JSON.stringify(msg));
+};
+
 async function main() {
     try {
         const smpp = new Smpp();
@@ -18,15 +22,22 @@ async function main() {
             vhost: process.argv.AMQP_VHOST || '/',
         });
         window.channel = await amqp_connection.createChannel();
+        window.sendQueue = `send.${process.argv.AMQP_QUEUE}`;
+        window.confirmQueue = `confirm.${process.argv.AMQP_QUEUE}`;
+        window.receiveQueue = `receive.${process.argv.AMQP_QUEUE}`;
         if(typeof process.argv.AMQP_PREFETCH != "undefined") {
             channel.prefetch(process.argv.AMQP_PREFETCH);
         }
         channel.assertQueue(queue, {durable: true});
+        channel.assertQueue(sendQueue, {durable: true});
+        channel.assertQueue(confirmQueue, {durable: true});
+        channel.assertQueue(receiveQueue, {durable: true});
         channel.consume(queue, async (msg) => {
             const data = JSON.parse(msg.content);
             if(smpp.isConnected()) {
                 try {
-                    const message_id = await smpp.send(data.message, data.number);
+                    const {message_id, command_status} = await smpp.send(data.message, data.number);
+                    channel.publish(sendQueue, buffer({message_id: message_id, command_status: command_status}));
                     channel.ack(msg);
                 } catch (e) {
                     console.log(e.message);
