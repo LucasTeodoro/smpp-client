@@ -9,7 +9,7 @@ global.nack = (msg) => {
 };
 
 global.publish = (queue, msg) => {
-    if(exchange) {
+    if(exchange === undefined) {
         channel.publish(queue, buffer(msg));
     } else {
         channel.publish(exchange, queue, buffer(msg));
