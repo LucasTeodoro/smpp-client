@@ -32,7 +32,7 @@ async function main() {
                     console.log(e.message);
                     setTimeout(() => {
                         channel.nack(msg);
-                    }, 1000 * (process.argv.SMPP_RETENT_DELAY || 30));
+                    }, 1000 * (process.argv.SMPP_RETRAY_DELAY || 30));
                 }
             }
 
