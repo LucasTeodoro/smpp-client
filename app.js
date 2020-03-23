@@ -27,7 +27,6 @@ async function main() {
                     return;
                 } catch (e) {
                     console.log(e.message);
-                    nack(msg);
                 }
             }
 
