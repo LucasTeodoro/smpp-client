@@ -60,9 +60,13 @@ class Smpp {
 
         });
 
+        this._session.on("enquire_link", (pdu) => {
+            this._session.send(pdu.response());
+        });
+
         this._session.on("close", () => {
             this._isConnected = false;
-            console.error("This this._session is close. Trying to reconnect...");
+            console.error("This session is close. Trying to reconnect...");
             setTimeout(() => { this._session.connect() }, 30000);
         });
     }
