@@ -17,12 +17,15 @@ async function main() {
         channel.assertQueue(sendQueue, {durable: true});
         channel.assertQueue(confirmQueue, {durable: true});
         channel.assertQueue(receiveQueue, {durable: true});
+        if(exchange !== undefined) {
+            channel.assertExchange(exchange, "topic", {durable: true});
+        }
         channel.consume(queue, async (msg) => {
             const data = JSON.parse(msg.content);
             if(smpp.isConnected()) {
                 try {
                     const {message_id, command_status} = await smpp.send(data.message, data.number);
-                    channel.publish(sendQueue, buffer({message_id: data.message_id, send_message_id: message_id, command_status: command_status}));
+                    publish(sendQueue,{message_id: data.message_id, send_message_id: message_id, command_status: command_status});
                     channel.ack(msg);
                     return;
                 } catch (e) {

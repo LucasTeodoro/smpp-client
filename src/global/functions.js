@@ -7,3 +7,11 @@ global.nack = (msg) => {
         channel.nack(msg);
     }, 1000 * (process.argv.SMPP_RETRAY_DELAY || 30));
 };
+
+global.publish = (queue, msg) => {
+    if(exchange) {
+        channel.publish(queue, buffer(msg));
+    } else {
+        channel.publish(exchange, queue, buffer(msg));
+    }
+};
