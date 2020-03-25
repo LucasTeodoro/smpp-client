@@ -14,12 +14,12 @@ async function main() {
         if(typeof process.argv.AMQP_PREFETCH != "undefined") {
             channel.prefetch(process.argv.AMQP_PREFETCH);
         }
-        channel.assertQueue(queue, {durable: true});
-        channel.assertQueue(sendQueue, {durable: true});
-        channel.assertQueue(confirmQueue, {durable: true});
-        channel.assertQueue(receiveQueue, {durable: true});
+        channel.assertQueue(queue, {durable: process.argv.AMQP_PERSIST || true});
+        channel.assertQueue(sendQueue, {durable: process.argv.AMQP_PERSIST || true});
+        channel.assertQueue(confirmQueue, {durable: process.argv.AMQP_PERSIST || true});
+        channel.assertQueue(receiveQueue, {durable: process.argv.AMQP_PERSIST || true});
         if(exchange !== undefined) {
-            channel.assertExchange(exchange, "topic", {durable: true});
+            channel.assertExchange(exchange, "topic", {durable: process.argv.AMQP_PERSIST || true});
         }
         channel.consume(queue, async (msg) => {
             const data = JSON.parse(msg.content);

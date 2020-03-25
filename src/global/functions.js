@@ -10,8 +10,8 @@ global.nack = (msg) => {
 
 global.publish = (queue, msg) => {
     if(exchange === undefined) {
-        channel.publish(queue, buffer(msg));
+        channel.publish(queue, buffer(msg), {persistent: process.argv.AMQP_PERSIST || true});
     } else {
-        channel.publish(exchange, queue, buffer(msg));
+        channel.publish(exchange, queue, buffer(msg), {persistent: process.argv.AMQP_PERSIST || true});
     }
 };

@@ -13,6 +13,7 @@ module.exports = {
                 "AMQP_LOCALE": "en_US",
                 "AMQP_HEARTBEAT": "0",
                 "AMQP_VHOST": "/",
+                "AMQP_PERSIST": true,
                 "AMQP_PREFETCH": undefined,
                 "AMQP_EXCHANGE": undefined,
                 "SMPP_HOST": "localhost",
