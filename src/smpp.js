@@ -37,14 +37,14 @@ class Smpp {
                 });
                 responseStatusObj["destination_addr"] = pdu.destination_addr;
                 responseStatusObj["source_addr"] = pdu.source_addr;
-                channel.publish(confirmQueue, buffer(responseStatusObj));
+                publish(confirmQueue, responseStatusObj);
                 this._session.send(pdu.response());
             } else {
                 if (pdu.data_coding === 8) {
                     pdu.short_message.message = iconv.decode(pdu.short_message.message, 'latin1');
                 }
                 if (pdu.short_message.message.indexOf('dlvrd:') === -1) {
-                    channel.publish(receiveQueue, buffer(pdu));
+                    publish(receiveQueue, pdu);
                     this._session.send(pdu.response());
                 }
             }
@@ -60,9 +60,13 @@ class Smpp {
 
         });
 
+        this._session.on("enquire_link", (pdu) => {
+            this._session.send(pdu.response());
+        });
+
         this._session.on("close", () => {
             this._isConnected = false;
-            console.error("This this._session is close. Trying to reconnect...");
+            console.error("This session is close. Trying to reconnect...");
             setTimeout(() => { this._session.connect() }, 30000);
         });
     }
