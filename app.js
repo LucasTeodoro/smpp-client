@@ -2,6 +2,7 @@ require("./src/global/functions");
 require("./src/global/variables");
 const Smpp = require("./src/smpp");
 const Amqp = require("./src/connections/rabbit");
+const rules = require("send-rules");
 
 async function main() {
     try {
