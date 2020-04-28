@@ -5,12 +5,12 @@
   "main": "app.js",
   "repository": "https://github.com/LucasTeodoro/smpp-client",
   "author": "Lucas Otávio Teodoro Silva",
-
   "license": "MIT",
   "private": false,
   "dependencies": {
     "iconv-lite": "^0.5.1",
     "lodash": "^4.17.15",
-    "smpp": "^0.4.0"
+    "smpp": "^0.4.0",
+    "winston": "^3.2.1"
   }
 }

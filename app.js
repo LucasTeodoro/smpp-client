@@ -1,6 +1,7 @@
 const smpp = require("smpp"),
     iconv = require("iconv-lite"),
-    _  = require("lodash");
+    _  = require("lodash"),
+    winston = require('winston');
 
 delete smpp.encodings.UCS2;
 
@@ -9,6 +10,14 @@ module.exports = function Client(name, host, port, username, password, enquire, 
     let _status = false;
     let _session = undefined;
     let _enable = false;
+    const logger = winston.createLogger({
+        level: 'info',
+        format: winston.format.json(),
+        defaultMeta: { service: name },
+        transports: [
+            new winston.transports.Console({ format: winston.format.simple() })
+        ]
+    });
     const connection_data = {
         url: `smpp://${host}:${port}`,
         auto_enquire_link_period: 1000 * enquire
@@ -16,19 +25,8 @@ module.exports = function Client(name, host, port, username, password, enquire, 
     function init() {
         _session = smpp.connect(connection_data);
         _session.on("connect", () => {
-            _session.bind_transceiver({
-                system_id: username,
-                password
-            }, async (pdu) => {
-                const state = lookupPDUStatusKey(pdu.command_status);
-                if (state === "ESME_ROK") {
-                    console.log(`${name} is connected.`);
-                    _isConnected = true;
-                    _status = true;
-                } else {
-                    console.error(`${name} is not connected. smpp error: ${state}`);
-                }
-            });
+            _isConnected = true;
+            _status = true;
         });
         _session.on("deliver_sm", (pdu) => {
             if (_.isString(pdu.short_message.message) && pdu.esm_class === 4) {
@@ -60,7 +58,7 @@ module.exports = function Client(name, host, port, username, password, enquire, 
         });
         _session.on("error", (error) => {
             _isConnected = false;
-            console.error(error.message);
+            logger.error(error.message);
             _session.close();
         });
         _session.on("unknown", (pdu) => {
@@ -73,14 +71,14 @@ module.exports = function Client(name, host, port, username, password, enquire, 
             if (_enable === true) {
                 _isConnected = false;
                 const delay = process.env.SMPP_RETRAY_DELAY || 30;
-                console.info(`${name}: This session is close. Trying to reconnect in ${delay}...`);
+                logger.info(`${name}: This session is close. Trying to reconnect in ${delay}...`);
                 setTimeout(() => {
-                    console.info(`${name}: reconnecting...`);
+                    logger.info(`${name}: reconnecting...`);
                     init();
                 }, 1000 * delay);
             } else {
                 _session.destroy();
-                console.info(`Stop client ${name}`);
+                logger.info(`Stop client ${name}`);
             }
         });
     }
@@ -97,7 +95,21 @@ module.exports = function Client(name, host, port, username, password, enquire, 
         }
     }
     function enable() {
-        if(_enable === false) _enable = true;
+        if(_enable === false){
+            _session.bind_transceiver({
+                system_id: username,
+                password
+            }, async (pdu) => {
+                const state = lookupPDUStatusKey(pdu.command_status);
+                if (state === "ESME_ROK") {
+                    logger.info(`${name} is connected.`);
+                    _enable = true;
+                } else {
+                    logger.error(`${name} is not connected. smpp error: ${state}`);
+                    _enable = false;
+                }
+            });
+        }
     }
     function disable() {
         if(_enable === true) _enable = false;
