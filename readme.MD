@@ -6,7 +6,7 @@ Smpp client is a package to help a faster implement.\
 
 ## Installation
 
-Use the package manager [npm](https://www.npmjs.com/get-npm) to install Smpp Client.
+Use the package manager [npm](https://www.npmjs.com/get-npm) to install Smpp Client.\
 [![NPM](https://nodei.co/npm/smpp-client.png?downloads=true&downloadRank=true)](https://nodei.co/npm/smpp-client/)
 
 ## Usage
