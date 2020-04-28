@@ -5,3 +5,26 @@ services:
     build: .
     volumes:
       - .:/node
+    env_file:
+      - .env-example
+    networks:
+      - app-network
+  fakesmpp:
+    container_name: fakesmpp
+    build: .docker/fakesmpp/.
+    networks:
+      - app-network
+  rabbit:
+    image: rabbitmq:3-management
+    container_name: rabbit
+    tty: true
+    env_file:
+      - .docker/.env
+    ports:
+      - 8081:15672
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
