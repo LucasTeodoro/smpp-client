@@ -6,15 +6,15 @@ Smpp client is a package to help a faster implement.\
 
 ## Installation
 
-Use the package manager [npm](https://www.npmjs.com/get-npm) to install Smpp Client.
+Use the package manager [npm](https://www.npmjs.com/get-npm) to install Smpp Client.\
 [![NPM](https://nodei.co/npm/smpp-client.png?downloads=true&downloadRank=true)](https://nodei.co/npm/smpp-client/)
 
 ## Usage
 ###**1. Creating a session**
-```nodejs
+```node
 const {Client} = require("smpp-client");
 
-const client = new Client(
+const client = Client(
     "foo", 
     "localhost", 
     "2775", 
@@ -38,14 +38,14 @@ const client = new Client(
 
 The start resume the session.
 
-```nodejs
+```node
 client.start();
 ```
 ###**3. Stop the client**
 
 The stop pause the session.
 
-```nodejs
+```node
 client.stop();
 ```
 
@@ -53,7 +53,7 @@ client.stop();
 
 The enable make the bind if server.
 
-```nodejs
+```node
 client.enable();
 ```
 
@@ -61,7 +61,7 @@ client.enable();
 
 The disable destroy de session if server.
 
-```nodejs
+```node
 client.disable();
 ```
 
@@ -69,7 +69,7 @@ client.disable();
 
 The send submit a submit pdu to the server.
 
-```nodejs
+```node
 client.send("Foo bar", +55999999999).then((response) => {
     console.log(response.message_id, response.command_status);
 });
