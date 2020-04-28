@@ -115,31 +115,33 @@ module.exports = function Client(name, host, port, username, password, enquire, 
         if(_enable === true) _enable = false;
     }
     function send(message, destine) {
-        if(_enable === false) throw new Error("Can send a message. Connector is not enable.");
-        let pdu;
-        if (message.length > 160) {
-            pdu = new smpp.PDU("submit_sm", {
-                destination_addr: destine,
-                short_message: "",
-                message_payload: message,
-                registered_delivery: 1
-            });
-        } else {
-            pdu = new smpp.PDU("submit_sm", {
-                destination_addr: destine,
-                short_message: message,
-                message_payload: "",
-                registered_delivery: 1
-            });
-        }
-
-        _session.send(pdu, (responsePdu) => {
-            const command_status = lookupPDUStatusKey(responsePdu.command_status);
-            if (responsePdu.command_status === 0) {
-                return {message_id: responsePdu.message_id, command_status: command_status};
+        return new Promise(resolve => {
+            if(_enable === false) throw new Error("Can send a message. Connector is not enable.");
+            let pdu;
+            if (message.length > 160) {
+                pdu = new smpp.PDU("submit_sm", {
+                    destination_addr: destine,
+                    short_message: "",
+                    message_payload: message,
+                    registered_delivery: 1
+                });
             } else {
-                return {message_id: undefined, command_status: command_status};
+                pdu = new smpp.PDU("submit_sm", {
+                    destination_addr: destine,
+                    short_message: message,
+                    message_payload: "",
+                    registered_delivery: 1
+                });
             }
+
+            _session.send(pdu, (responsePdu) => {
+                const command_status = lookupPDUStatusKey(responsePdu.command_status);
+                if (responsePdu.command_status === 0) {
+                    resolve({message_id: responsePdu.message_id, command_status: command_status});
+                } else {
+                    resolve({message_id: undefined, command_status: command_status});
+                }
+            });
         });
     }
     function lookupPDUStatusKey(pduCommandStatus) {

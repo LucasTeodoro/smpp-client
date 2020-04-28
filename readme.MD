@@ -70,8 +70,9 @@ client.disable();
 The send submit a submit pdu to the server.
 
 ```node
-const response = client.send("Foo bar", +55999999999);
-console.log(response.message_id, response.command_status);
+client.send("Foo bar", +55999999999).then((response) => {
+    console.log(response.message_id, response.command_status);
+});
 ```
 
 ## Contributing
