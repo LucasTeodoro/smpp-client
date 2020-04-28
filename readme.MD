@@ -80,3 +80,10 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 
 ## License
 [MIT](LICENSE)
+
+## Built With
+
+* [node-smpp](https://github.com/farhadi/node-smpp) SMPP Base
+* [wiston](https://github.com/winstonjs/winston) Logger
+* [lodash](https://lodash.com/)
+* [iconv-lite](https://github.com/ashtuchkin/iconv-lite)
