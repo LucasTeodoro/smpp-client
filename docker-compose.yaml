@@ -4,6 +4,7 @@ services:
   app:
     build: .
     volumes:
+<<<<<<< HEAD
       - .:/node
     env_file:
       - .env-example
@@ -28,3 +29,6 @@ services:
 networks:
   app-network:
     driver: bridge
+=======
+     - .:/home/node/app
+>>>>>>> 5e9bbed7fa937d8d1b9e99560bcaa62bbcda5600

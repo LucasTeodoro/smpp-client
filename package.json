@@ -1,15 +1,28 @@
 {
   "name": "smpp-client",
-  "version": "1.0.0",
-  "description": "Smpp Client ",
+  "version": "1.0.1",
+  "description": "Smpp Client",
   "main": "app.js",
   "repository": "https://github.com/LucasTeodoro/smpp-client",
   "author": "Lucas Otávio Teodoro Silva",
   "license": "MIT",
   "private": false,
+  "keywords": [
+    "smpp",
+    "smpp-client",
+    "smpp-protocol",
+    "smpp-library"
+  ],
   "dependencies": {
+<<<<<<< HEAD
     "amqplib": "^0.5.5",
     "express": "^4.17.1",
     "smpp-client": "^1.0.1"
+=======
+    "iconv-lite": "^0.5.1",
+    "lodash": "^4.17.15",
+    "smpp": "^0.4.0",
+    "winston": "^3.2.1"
+>>>>>>> 5e9bbed7fa937d8d1b9e99560bcaa62bbcda5600
   }
 }
