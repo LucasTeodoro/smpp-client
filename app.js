@@ -114,7 +114,7 @@ module.exports = function Client(name, host, port, username, password, enquire, 
     function disable() {
         if(_enable === true) _enable = false;
     }
-    async function send(message, destine) {
+    function send(message, destine) {
         if(_enable === false) throw new Error("Can send a message. Connector is not enable.");
         let pdu;
         if (message.length > 160) {
