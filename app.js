@@ -120,6 +120,7 @@ module.exports = function Client(name, host, port, username, password, enquire, 
         if (message.length > 160) {
             pdu = new smpp.PDU("submit_sm", {
                 destination_addr: destine,
+                short_message: "",
                 message_payload: message,
                 registered_delivery: 1
             });
@@ -127,6 +128,7 @@ module.exports = function Client(name, host, port, username, password, enquire, 
             pdu = new smpp.PDU("submit_sm", {
                 destination_addr: destine,
                 short_message: message,
+                message_payload: "",
                 registered_delivery: 1
             });
         }

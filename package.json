@@ -1,6 +1,6 @@
 {
   "name": "smpp-client",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Smpp Client",
   "main": "app.js",
   "repository": "https://github.com/LucasTeodoro/smpp-client",
